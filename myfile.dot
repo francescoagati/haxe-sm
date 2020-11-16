@@ -1,0 +1,30 @@
+# dot -Tpng myfile.dot >myfile.png
+digraph g {
+rankdir="LR";
+node[style="rounded",shape="box"]
+edge[splines="curved"]
+  list [style="rounded,filled",fillcolor="gray"]list -> insertData [label="insert"];
+insertData -> validateInsert [label="insert"];
+validateInsert -> create [label="insert"];
+validateInsert -> insertData [label="eValidate"];
+create -> createError [label="eError"];
+createError -> insertData [label="insert"];
+insertData -> list [label="eList"];
+create -> created [label="insert"];
+created -> list [label="goTolist"];
+created -> updateData [label="update"];
+updateData -> validateUpdate [label="update"];
+validateUpdate -> update [label="update"];
+update -> updated [label="update"];
+update -> updateError [label="eError"];
+updateError -> updateData [label="update"];
+validateUpdate -> updateData [label="eValidate"];
+updateData -> list [label="eList"];
+updateData -> delete [label="eDelete"];
+updated -> list [label="goTolist"];
+updated -> updateData [label="update"];
+list -> updateData [label="update"];
+list -> delete [label="eDelete"];
+delete -> deleted [label="eDelete"];
+deleted -> list [label="goTolist"];
+}
