@@ -3,7 +3,7 @@ digraph g {
 rankdir="LR";
 node[style="rounded",shape="box"]
 edge[splines="curved"]
-  insertData [style="rounded,filled",fillcolor="gray"]list -> insertData [label="insert"];
+  created [style="rounded,filled",fillcolor="gray"]list -> insertData [label="insert"];
 insertData -> validateInsert [label="insert"];
 validateInsert -> create [label="insert"];
 validateInsert -> insertData [label="eValidate"];

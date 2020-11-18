@@ -32,6 +32,136 @@ Machine.prototype = {
 		this.dst = "";
 		this.evt = "";
 	}
+	,action: function(specifier,fn) {
+		var _this = this.actions;
+		if(__map_reserved[specifier] != null) {
+			_this.setReserved(specifier,fn);
+		} else {
+			_this.h[specifier] = fn;
+		}
+	}
+	,send: function(event) {
+		if(this.cancelled) {
+			return;
+		}
+		if(this.processingEvent) {
+			this.pendingEvent = event;
+			return;
+		}
+		this.src = this.currentState;
+		this.evt = event;
+		var key = event + "_" + this.currentState;
+		var _this = this.transitions;
+		var ok = __map_reserved[key] != null ? _this.existsReserved(key) : _this.h.hasOwnProperty(key);
+		this.processingEvent = true;
+		if(ok) {
+			var key1 = event + "_" + this.currentState;
+			var _this1 = this.transitions;
+			var nextState = __map_reserved[key1] != null ? _this1.getReserved(key1) : _this1.h[key1];
+			this.dst = nextState;
+			this.cancellable = true;
+			var _this2 = this.actions;
+			var key2 = ">>" + event;
+			var f = __map_reserved[key2] != null ? _this2.getReserved(key2) : _this2.h[key2];
+			if(f != null) {
+				f();
+			}
+			if(this.cancelled) {
+				this.reset();
+				return;
+			}
+			var _this3 = this.actions;
+			f = __map_reserved[">>*"] != null ? _this3.getReserved(">>*") : _this3.h[">>*"];
+			if(f != null) {
+				f();
+			}
+			if(this.cancelled) {
+				this.reset();
+				return;
+			}
+			var key3 = "<" + this.currentState;
+			var _this4 = this.actions;
+			f = __map_reserved[key3] != null ? _this4.getReserved(key3) : _this4.h[key3];
+			if(f != null) {
+				f();
+			}
+			if(this.cancelled) {
+				this.reset();
+				return;
+			}
+			var _this5 = this.actions;
+			f = __map_reserved["<*"] != null ? _this5.getReserved("<*") : _this5.h["<*"];
+			if(f != null) {
+				f();
+			}
+			if(this.cancelled) {
+				this.reset();
+				return;
+			}
+			this.currentState = nextState;
+			this.cancellable = false;
+			var key4 = ">" + this.currentState;
+			var _this6 = this.actions;
+			f = __map_reserved[key4] != null ? _this6.getReserved(key4) : _this6.h[key4];
+			if(f != null) {
+				f();
+			}
+			var _this7 = this.actions;
+			f = __map_reserved[">*"] != null ? _this7.getReserved(">*") : _this7.h[">*"];
+			if(f != null) {
+				f();
+			}
+			var _this8 = this.actions;
+			var key5 = "<<" + event;
+			f = __map_reserved[key5] != null ? _this8.getReserved(key5) : _this8.h[key5];
+			if(f != null) {
+				f();
+			}
+			var _this9 = this.actions;
+			f = __map_reserved["<<*"] != null ? _this9.getReserved("<<*") : _this9.h["<<*"];
+			if(f != null) {
+				f();
+			}
+			this.dst = "";
+		} else {
+			var cnt = 0;
+			var _this10 = this.actions;
+			var key6 = "!!" + event;
+			var f1 = __map_reserved[key6] != null ? _this10.getReserved(key6) : _this10.h[key6];
+			if(f1 != null) {
+				f1();
+				cnt = 1;
+			}
+			var key7 = "!" + this.currentState;
+			var _this11 = this.actions;
+			f1 = __map_reserved[key7] != null ? _this11.getReserved(key7) : _this11.h[key7];
+			if(f1 != null) {
+				f1();
+				++cnt;
+			}
+			var _this12 = this.actions;
+			f1 = __map_reserved["!*"] != null ? _this12.getReserved("!*") : _this12.h["!*"];
+			if(f1 != null) {
+				f1();
+				++cnt;
+			}
+			if(cnt == 0) {
+				var _this13 = this.actions;
+				f1 = __map_reserved["!!!"] != null ? _this13.getReserved("!!!") : _this13.h["!!!"];
+				if(f1 != null) {
+					f1();
+				}
+			}
+		}
+		this.src = "";
+		this.evt = "";
+		this.processingEvent = false;
+		if(this.pendingEvent != "") {
+			var e = this.pendingEvent;
+			this.pendingEvent = "";
+			this.send(e);
+		}
+	}
 	,'export': function() {
 		var export_str = "# dot -Tpng myfile.dot >myfile.png\ndigraph g {\nrankdir=\"LR\";\nnode[style=\"rounded\",shape=\"box\"]\nedge[splines=\"curved\"]";
 		export_str = "# dot -Tpng myfile.dot >myfile.png\ndigraph g {\nrankdir=\"LR\";\nnode[style=\"rounded\",shape=\"box\"]\nedge[splines=\"curved\"]" + ("\n  " + this.currentState + " [style=\"rounded,filled\",fillcolor=\"gray\"]");
@@ -62,7 +192,8 @@ Main.main = function() {
 	console.log("src/Main.hx:37:","Hello, world!");
 	var machine = new Machine("list");
 	var params = { event : "insert", src : "list", dst : "insertData"};
-	machine.rule(Std.string(params.event) + "",params.src,params.dst);
+	var tmp = Std.string(params.event) + "";
+	machine.rule(tmp,params.src,params.dst);
 	var this1 = machine;
 	var params1 = { event : "insert", src : "insertData", dst : "validateInsert"};
 	this1.rule(Std.string(params1.event) + "",params1.src,params1.dst);
@@ -110,7 +241,26 @@ Main.main = function() {
 	this1.rule(Std.string(params22.event) + "",params22.src,params22.dst);
 	var params23 = { event : "goTolist", src : "deleted", dst : "list"};
 	this1.rule(Std.string(params23.event) + "",params23.src,params23.dst);
-	js_node_Fs.writeFileSync("myfile.dot",machine.export());
+	machine.action(">*",function() {
+		console.log("src/Main.hx:187:",machine.currentState);
+		js_node_Fs.writeFileSync("myfile-" + machine.currentState + ".dot",machine.export());
+		return;
+	});
+	machine.send("insert");
+	machine.send("insert");
+	machine.send("insert");
+	machine.send("insert");
+	machine.send("insert");
+	machine.send("insert");
+	machine.send("insert");
+	machine.send("insert");
+	machine.send("insert");
+	machine.send("insert");
+	machine.send("update");
+	machine.send("update");
+	machine.send("update");
+	machine.send("update");
+	machine.send("update");
 };
 Math.__name__ = true;
 var Std = function() { };
@@ -135,6 +285,12 @@ haxe_ds_StringMap.prototype = {
 		} else {
 			return this.rh["$" + key];
 		}
+	}
+	,existsReserved: function(key) {
+		if(this.rh == null) {
+			return false;
+		}
+		return this.rh.hasOwnProperty("$" + key);
 	}
 	,keys: function() {
 		return HxOverrides.iter(this.arrayKeys());

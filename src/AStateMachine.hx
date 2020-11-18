@@ -9,4 +9,24 @@ abstract AStateMachine<T1,T2>(Machine) from Machine {
 		return this;
 	}
 
+	public inline function on_enter_any(fn) {
+		this.action('>*',fn);
+	}
+
+	public inline function on_exit_any(fn) {
+		this.action('<*',fn);
+	}
+
+	public inline function on_enter(s:T2,fn) {
+		this.action('>' + s,fn);
+	}
+
+	public inline function on_exit(s:T2,fn) {
+		this.action('<' + s,fn);
+	}
+
+	public inline function send(e:T1) 
+		this.send(e + "");
+
+
 }

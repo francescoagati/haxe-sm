@@ -182,6 +182,32 @@ class Main {
 				dst: list
 			});
 
-		File.saveContent('myfile.dot', machine.export());
+
+			machine.on_enter_any(() -> {
+				trace(machine.currentState);
+				File.saveContent('myfile-${machine.currentState}.dot', machine.export());
+
+			});
+
+
+			machine.send(insert);
+			machine.send(insert);
+			machine.send(insert);
+			machine.send(insert);
+			machine.send(insert);
+			machine.send(insert);
+			machine.send(insert);
+			machine.send(insert);
+			machine.send(insert);
+			machine.send(insert);
+
+			machine.send(update);
+			machine.send(update);
+			machine.send(update);
+			machine.send(update);
+			machine.send(update);
+			
+
+
 	}
 }
