@@ -15,7 +15,7 @@ class Machine {
 	public var dst:String;
 	public var evt:String;
 
-	public function reset() {
+	inline public function reset() {
 		processingEvent = false;
 		cancellable = false;
 		cancelled = false;
@@ -26,7 +26,7 @@ class Machine {
 	}
 
 	// Create a new Machine with the specified initial state.
-	public function new(initial:String) {
+	inline public function new(initial:String) {
 		transitions = new Map<String, String>();
 		actions = new Map<String, Void->Void>();
 		currentState = initial;
@@ -53,13 +53,13 @@ class Machine {
 	//               matched.
 	//   !!!       - Evaluate the action if and only if the match failed
 	//               and no other error handling code would be evaluated.
-	public function action(specifier:String, fn:Void->Void) {
+	inline public function action(specifier:String, fn:Void->Void) {
 		actions[specifier] = fn;
 	}
 
 	// Attempts to cancel an executing event.  If successful the function
 	// returns true and false otherwise.
-	public function cancel():Bool {
+	inline public function cancel():Bool {
 		if (!cancellable) {
 			return false;
 		}
@@ -68,7 +68,7 @@ class Machine {
 	}
 
 	// Fire an event which may cause the machine to change state.
-	public function send(event:String) {
+	 public function send(event:String) {
 		if (cancelled) {
 			return;
 		}
@@ -179,7 +179,7 @@ class Machine {
 	}
 
 	// Return a string with a Graphviz DOT representation of the machine.
-	public function export():String {
+	inline public function export():String {
 		var export_str = '# dot -Tpng myfile.dot >myfile.png
 digraph g {
 rankdir="LR";
@@ -198,7 +198,7 @@ edge[splines="curved"]';
 	}
 
 	// Returns true if state is the current state
-	public function isState(state:String):Bool {
+	inline public function isState(state:String):Bool {
 		if (currentState == state) {
 			return true;
 		}
@@ -206,7 +206,7 @@ edge[splines="curved"]';
 	}
 
 	// Returns true if event is a valid event from the current state
-	public function isEvent(event:String):Bool {
+	inline public function isEvent(event:String):Bool {
 		if (transitions.exists(event + splitter + currentState)) {
 			return true;
 		}
@@ -215,7 +215,7 @@ edge[splines="curved"]';
 
 	// Add a transition connecting an event (i.e., an arc or transition)
 	// between a pair of src and dst states.
-	public function rule(event:String, src:String, dst:String) {
+	inline public function rule(event:String, src:String, dst:String) {
 		transitions[event + splitter + src] = dst;
 	}
 }

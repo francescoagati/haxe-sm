@@ -2,14 +2,11 @@ import sys.io.File;
 import js.html.FileSystem;
 import Machine;
 
-
-
 using MachineTools;
 using EnumValue;
 using haxe.EnumTools;
 using haxe.EnumTools.EnumValueTools;
 using Std;
-
 
 enum abstract Events(String) from String to String {
 	var go;
@@ -42,26 +39,20 @@ enum abstract States(String) from String to String {
 enum EventsTest {
 	E1(params:{a:Int});
 	E2(params:{a:Int});
-	E3(params:{a:Int});		
+	E3(params:{a:Int});
 }
 
-
 class Main {
-
 	static function main() {
-		var machine = new Machine("init");
+		var machine =  new Machine("init");
 
-		machine.rule("E1".string(),"init","e1");
+		machine.rule("E1".string(), "init", "e1");
 		machine.send(E1({
 			a: 1
 		}).getName());
 
-	
-
 		trace(machine.currentState);
-
 	}
-
 
 	static function _main() {
 		trace("Hello, world!");
@@ -212,32 +203,26 @@ class Main {
 				dst: list
 			});
 
+		machine.on_enter_any(() -> {
+			trace(machine.currentState);
+			File.saveContent('myfile-${machine.currentState}.dot', machine.export());
+		});
 
-			machine.on_enter_any(() -> {
-				trace(machine.currentState);
-				File.saveContent('myfile-${machine.currentState}.dot', machine.export());
+		machine.send(insert);
+		machine.send(insert);
+		machine.send(insert);
+		machine.send(insert);
+		machine.send(insert);
+		machine.send(insert);
+		machine.send(insert);
+		machine.send(insert);
+		machine.send(insert);
+		machine.send(insert);
 
-			});
-
-
-			machine.send(insert);
-			machine.send(insert);
-			machine.send(insert);
-			machine.send(insert);
-			machine.send(insert);
-			machine.send(insert);
-			machine.send(insert);
-			machine.send(insert);
-			machine.send(insert);
-			machine.send(insert);
-
-			machine.send(update);
-			machine.send(update);
-			machine.send(update);
-			machine.send(update);
-			machine.send(update);
-			
-
-
+		machine.send(update);
+		machine.send(update);
+		machine.send(update);
+		machine.send(update);
+		machine.send(update);
 	}
 }

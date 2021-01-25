@@ -5,20 +5,17 @@ var Machine = function(initial) {
 	this.transitions = new haxe_ds_StringMap();
 	this.actions = new haxe_ds_StringMap();
 	this.currentState = initial;
-	this.reset();
+	this.processingEvent = false;
+	this.cancellable = false;
+	this.cancelled = false;
+	this.pendingEvent = "";
+	this.src = "";
+	this.dst = "";
+	this.evt = "";
 };
 Machine.__name__ = true;
 Machine.prototype = {
-	reset: function() {
-		this.processingEvent = false;
-		this.cancellable = false;
-		this.cancelled = false;
-		this.pendingEvent = "";
-		this.src = "";
-		this.dst = "";
-		this.evt = "";
-	}
-	,send: function(event) {
+	send: function(event) {
 		if(this.cancelled) {
 			return;
 		}
@@ -39,7 +36,13 @@ Machine.prototype = {
 				f();
 			}
 			if(this.cancelled) {
-				this.reset();
+				this.processingEvent = false;
+				this.cancellable = false;
+				this.cancelled = false;
+				this.pendingEvent = "";
+				this.src = "";
+				this.dst = "";
+				this.evt = "";
 				return;
 			}
 			f = this.actions.h[">>*"];
@@ -47,7 +50,13 @@ Machine.prototype = {
 				f();
 			}
 			if(this.cancelled) {
-				this.reset();
+				this.processingEvent = false;
+				this.cancellable = false;
+				this.cancelled = false;
+				this.pendingEvent = "";
+				this.src = "";
+				this.dst = "";
+				this.evt = "";
 				return;
 			}
 			f = this.actions.h["<" + this.currentState];
@@ -55,7 +64,13 @@ Machine.prototype = {
 				f();
 			}
 			if(this.cancelled) {
-				this.reset();
+				this.processingEvent = false;
+				this.cancellable = false;
+				this.cancelled = false;
+				this.pendingEvent = "";
+				this.src = "";
+				this.dst = "";
+				this.evt = "";
 				return;
 			}
 			f = this.actions.h["<*"];
@@ -63,7 +78,13 @@ Machine.prototype = {
 				f();
 			}
 			if(this.cancelled) {
-				this.reset();
+				this.processingEvent = false;
+				this.cancellable = false;
+				this.cancelled = false;
+				this.pendingEvent = "";
+				this.src = "";
+				this.dst = "";
+				this.evt = "";
 				return;
 			}
 			this.currentState = nextState;
@@ -118,9 +139,6 @@ Machine.prototype = {
 			this.send(e);
 		}
 	}
-	,rule: function(event,src,dst) {
-		this.transitions.h[event + "###" + src] = dst;
-	}
 };
 var EventsTest = $hxEnums["EventsTest"] = { __ename__ : true, __constructs__ : ["E1","E2","E3"]
 	,E1: ($_=function(params) { return {_hx_index:0,params:params,__enum__:"EventsTest",toString:$estr}; },$_.__params__ = ["params"],$_)
@@ -131,10 +149,10 @@ var Main = function() { };
 Main.__name__ = true;
 Main.main = function() {
 	var machine = new Machine("init");
-	machine.rule("E1","init","e1");
+	machine.transitions.h["E1" + "###" + "init"] = "e1";
 	var e = EventsTest.E1({ a : 1});
 	machine.send($hxEnums[e.__enum__].__constructs__[e._hx_index]);
-	console.log("src/Main.hx:61:",machine.currentState);
+	console.log("src/Main.hx:54:",machine.currentState);
 };
 Math.__name__ = true;
 var haxe_ds_StringMap = function() {
