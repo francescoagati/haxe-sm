@@ -2,7 +2,14 @@ import sys.io.File;
 import js.html.FileSystem;
 import Machine;
 
+
+
 using MachineTools;
+using EnumValue;
+using haxe.EnumTools;
+using haxe.EnumTools.EnumValueTools;
+using Std;
+
 
 enum abstract Events(String) from String to String {
 	var go;
@@ -32,8 +39,31 @@ enum abstract States(String) from String to String {
 	var deleted;
 }
 
+enum EventsTest {
+	E1(params:{a:Int});
+	E2(params:{a:Int});
+	E3(params:{a:Int});		
+}
+
+
 class Main {
+
 	static function main() {
+		var machine = new Machine("init");
+
+		machine.rule("E1".string(),"init","e1");
+		machine.send(E1({
+			a: 1
+		}).getName());
+
+	
+
+		trace(machine.currentState);
+
+	}
+
+
+	static function _main() {
 		trace("Hello, world!");
 
 		var machine:AStateMachine<Events, States> = new Machine(list);

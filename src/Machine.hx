@@ -1,6 +1,7 @@
-
-//https://gist.github.com/jdpalmer/0b86621c82062e7a4dac
+// https://gist.github.com/jdpalmer/0b86621c82062e7a4dac
 class Machine {
+	static inline final splitter = "###";
+
 	public var currentState:String;
 
 	var transitions:Map<String, String>;
@@ -79,11 +80,11 @@ class Machine {
 
 		src = currentState;
 		evt = event;
-		var ok = transitions.exists(event + "_" + currentState);
+		var ok = transitions.exists(event + splitter + currentState);
 		processingEvent = true;
 
 		if (ok) {
-			var nextState = transitions[event + "_" + currentState];
+			var nextState = transitions[event + splitter + currentState];
 			dst = nextState;
 			cancellable = true;
 
@@ -187,7 +188,7 @@ edge[splines="curved"]';
 		export_str += "\n  " + currentState + " [style=\"rounded,filled\",fillcolor=\"gray\"]";
 		for (k in transitions.keys()) {
 			var dst = transitions[k];
-			var a = k.split("_");
+			var a = k.split(splitter);
 			var event = a[0];
 			var src = a[1];
 			export_str += src + " -> " + dst + " [label=\"" + event + "\"];\n";
@@ -206,7 +207,7 @@ edge[splines="curved"]';
 
 	// Returns true if event is a valid event from the current state
 	public function isEvent(event:String):Bool {
-		if (transitions.exists(event + "_" + currentState)) {
+		if (transitions.exists(event + splitter + currentState)) {
 			return true;
 		}
 		return false;
@@ -215,6 +216,6 @@ edge[splines="curved"]';
 	// Add a transition connecting an event (i.e., an arc or transition)
 	// between a pair of src and dst states.
 	public function rule(event:String, src:String, dst:String) {
-		transitions[event + "_" + src] = dst;
+		transitions[event + splitter + src] = dst;
 	}
 }
