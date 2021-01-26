@@ -1,5 +1,11 @@
 // https://gist.github.com/jdpalmer/0b86621c82062e7a4dac
-class Machine {
+
+using EnumValue;
+using haxe.EnumTools;
+using haxe.EnumTools.EnumValueTools;
+
+
+class Machine<E> {
 	static inline final splitter = "###";
 
 	public var currentState:String;
@@ -14,6 +20,9 @@ class Machine {
 	public var src:String;
 	public var dst:String;
 	public var evt:String;
+
+	public var currentEvt:E;
+
 
 	inline public function reset() {
 		processingEvent = false;
@@ -176,6 +185,11 @@ class Machine {
 			pendingEvent = "";
 			send(e);
 		}
+	}
+
+	public inline function send2(evt:EnumValue) {
+		currentEvt = untyped evt;
+		send(evt.getName());
 	}
 
 	// Return a string with a Graphviz DOT representation of the machine.

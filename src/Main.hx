@@ -1,8 +1,9 @@
+import haxe.macro.Type.EnumType;
 import sys.io.File;
 import js.html.FileSystem;
 import Machine;
 
-using MachineTools;
+// using MachineTools;
 using EnumValue;
 using haxe.EnumTools;
 using haxe.EnumTools.EnumValueTools;
@@ -37,24 +38,66 @@ enum abstract States(String) from String to String {
 }
 
 enum EventsTest {
-	E1(params:{a:Int});
+	E1(?params:{a:Int});
 	E2(params:{a:Int});
 	E3(params:{a:Int});
 }
 
 class Main {
 	static function main() {
-		var machine =  new Machine("init");
+		var machine = new Machine<EventsTest>("init");
 
-		machine.rule("E1".string(), "init", "e1");
-		machine.send(E1({
-			a: 1
-		}).getName());
+		trace(EnumValueTools.getName(E1()));
+
+		machine.rule(E1().getName(), "init", "e1");
+
+		machine.rule(E1().getName(), "e1", "e2");
+		machine.rule(E1().getName(), "e2", "e3");
+
+		/* 		machine.send(E1({
+				a: 1
+			}).getName());
+		 */
+
+
+		machine.action('>*',() -> {
+
+			switch machine.currentState {
+				case 'e1' | 'e2' | 'e3':{
+					switch machine.currentEvt {
+						case E1({a:b}):trace(b);
+						case E2(params):
+						case E3(params):
+						case _:null;
+					}
+				}
+			};
+
+		});
+
+		machine.send2(E1({
+			a: 1000
+		}));
 
 		trace(machine.currentState);
-	}
 
-	static function _main() {
+
+		machine.send2(E1({
+			a: 2000
+		}));
+
+		trace(machine.currentState);
+
+
+		machine.send2(E1({
+			a: 3000
+		}));
+
+		trace(machine.currentState);
+
+
+	}
+	/* 	static function _main() {
 		trace("Hello, world!");
 
 		var machine:AStateMachine<Events, States> = new Machine(list);
@@ -224,5 +267,5 @@ class Main {
 		machine.send(update);
 		machine.send(update);
 		machine.send(update);
-	}
+	}*/
 }
