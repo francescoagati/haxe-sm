@@ -43,36 +43,41 @@ enum EventsTest {
 	E3(params:{a:Int});
 }
 
+enum abstract Statesa(String) to String {
+	var init;
+	var e1;
+	var e2;
+	var e3;
+}
+
 class Main {
 	static function main() {
-		var machine = new Machine<EventsTest>("init");
+		var machine = new Machine<EventsTest, Statesa>(init);
 
 		trace(EnumValueTools.getName(E1()));
 
-		machine.rule(E1().getName(), "init", "e1");
+		machine.rule(E1().getName(), init, e1);
 
-		machine.rule(E1().getName(), "e1", "e2");
-		machine.rule(E1().getName(), "e2", "e3");
+		machine.rule(E1().getName(), e1, e2);
+		machine.rule(E1().getName(), e2, e3);
 
 		/* 		machine.send(E1({
 				a: 1
 			}).getName());
 		 */
 
-
-		machine.action('>*',() -> {
-
+		machine.action('>*', () -> {
 			switch machine.currentState {
-				case 'e1' | 'e2' | 'e3':{
-					switch machine.currentEvt {
-						case E1({a:b}):trace(b);
-						case E2(params):
-						case E3(params):
-						case _:null;
+				case e1 | e2 | e3: {
+						switch machine.currentEvt {
+							case E1({a: b}): trace(b);
+							case E2(params):
+							case E3(params):
+							case _: null;
+						}
 					}
-				}
+				case init: null;
 			};
-
 		});
 
 		machine.send2(E1({
@@ -81,21 +86,17 @@ class Main {
 
 		trace(machine.currentState);
 
-
 		machine.send2(E1({
 			a: 2000
 		}));
 
 		trace(machine.currentState);
 
-
 		machine.send2(E1({
 			a: 3000
 		}));
 
 		trace(machine.currentState);
-
-
 	}
 	/* 	static function _main() {
 		trace("Hello, world!");

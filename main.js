@@ -25,10 +25,10 @@ Machine.prototype = {
 		}
 		this.src = this.currentState;
 		this.evt = event;
-		var ok = Object.prototype.hasOwnProperty.call(this.transitions.h,event + "###" + this.currentState);
+		var ok = Object.prototype.hasOwnProperty.call(this.transitions.h,event + "###" + Std.string(this.currentState));
 		this.processingEvent = true;
 		if(ok) {
-			var nextState = this.transitions.h[event + "###" + this.currentState];
+			var nextState = this.transitions.h[event + "###" + Std.string(this.currentState)];
 			this.dst = nextState;
 			this.cancellable = true;
 			var f = this.actions.h[">>" + event];
@@ -59,7 +59,7 @@ Machine.prototype = {
 				this.evt = "";
 				return;
 			}
-			f = this.actions.h["<" + this.currentState];
+			f = this.actions.h["<" + Std.string(this.currentState)];
 			if(f != null) {
 				f();
 			}
@@ -89,7 +89,7 @@ Machine.prototype = {
 			}
 			this.currentState = nextState;
 			this.cancellable = false;
-			f = this.actions.h[">" + this.currentState];
+			f = this.actions.h[">" + Std.string(this.currentState)];
 			if(f != null) {
 				f();
 			}
@@ -113,7 +113,7 @@ Machine.prototype = {
 				f();
 				cnt = 1;
 			}
-			f = this.actions.h["!" + this.currentState];
+			f = this.actions.h["!" + Std.string(this.currentState)];
 			if(f != null) {
 				f();
 				++cnt;
@@ -150,7 +150,7 @@ Main.__name__ = true;
 Main.main = function() {
 	var machine = new Machine("init");
 	var e = EventsTest.E1();
-	console.log("src/Main.hx:50:",$hxEnums[e.__enum__].__constructs__[e._hx_index]);
+	console.log("src/Main.hx:57:",$hxEnums[e.__enum__].__constructs__[e._hx_index]);
 	var e = EventsTest.E1();
 	machine.transitions.h[$hxEnums[e.__enum__].__constructs__[e._hx_index] + "###" + "init"] = "e1";
 	var e = EventsTest.E1();
@@ -165,7 +165,7 @@ Main.main = function() {
 			case 0:
 				var _g1 = _g.params;
 				if(_g1 != null) {
-					console.log("src/Main.hx:68:",_g1.a);
+					console.log("src/Main.hx:73:",_g1.a);
 				}
 				break;
 			case 1:
@@ -174,23 +174,30 @@ Main.main = function() {
 				break;
 			}
 			break;
+		case "init":
+			break;
 		}
 	};
 	machine.actions.h[">*"] = fn;
 	var evt = EventsTest.E1({ a : 1000});
 	machine.currentEvt = evt;
 	machine.send($hxEnums[evt.__enum__].__constructs__[evt._hx_index]);
-	console.log("src/Main.hx:82:",machine.currentState);
+	console.log("src/Main.hx:87:",machine.currentState);
 	var evt = EventsTest.E1({ a : 2000});
 	machine.currentEvt = evt;
 	machine.send($hxEnums[evt.__enum__].__constructs__[evt._hx_index]);
-	console.log("src/Main.hx:89:",machine.currentState);
+	console.log("src/Main.hx:93:",machine.currentState);
 	var evt = EventsTest.E1({ a : 3000});
 	machine.currentEvt = evt;
 	machine.send($hxEnums[evt.__enum__].__constructs__[evt._hx_index]);
-	console.log("src/Main.hx:96:",machine.currentState);
+	console.log("src/Main.hx:99:",machine.currentState);
 };
 Math.__name__ = true;
+var Std = function() { };
+Std.__name__ = true;
+Std.string = function(s) {
+	return js_Boot.__string_rec(s,"");
+};
 var haxe_ds_StringMap = function() {
 	this.h = Object.create(null);
 };

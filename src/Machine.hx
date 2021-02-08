@@ -1,16 +1,14 @@
 // https://gist.github.com/jdpalmer/0b86621c82062e7a4dac
-
 using EnumValue;
 using haxe.EnumTools;
 using haxe.EnumTools.EnumValueTools;
 
-
-class Machine<E> {
+class Machine<E, T:String> {
 	static inline final splitter = "###";
 
-	public var currentState:String;
+	public var currentState:T;
 
-	var transitions:Map<String, String>;
+	var transitions:Map<String, T>;
 	var actions:Map<String, Void->Void>;
 	var pendingEvent:String;
 	var processingEvent:Bool;
@@ -23,7 +21,6 @@ class Machine<E> {
 
 	public var currentEvt:E;
 
-
 	inline public function reset() {
 		processingEvent = false;
 		cancellable = false;
@@ -35,8 +32,8 @@ class Machine<E> {
 	}
 
 	// Create a new Machine with the specified initial state.
-	inline public function new(initial:String) {
-		transitions = new Map<String, String>();
+	inline public function new(initial:T) {
+		transitions = new Map<String, T>();
 		actions = new Map<String, Void->Void>();
 		currentState = initial;
 		reset();
@@ -77,7 +74,7 @@ class Machine<E> {
 	}
 
 	// Fire an event which may cause the machine to change state.
-	 public function send(event:String) {
+	public function send(event:String) {
 		if (cancelled) {
 			return;
 		}
@@ -229,7 +226,7 @@ edge[splines="curved"]';
 
 	// Add a transition connecting an event (i.e., an arc or transition)
 	// between a pair of src and dst states.
-	inline public function rule(event:String, src:String, dst:String) {
-		transitions[event + splitter + src] = dst;
+	inline public function rule(event:String, src:T, dst:T) {
+		transitions.set(event + splitter + src, dst);
 	}
 }
